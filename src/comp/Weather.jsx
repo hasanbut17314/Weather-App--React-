@@ -100,12 +100,18 @@ function Weather() {
                     </div>
                 </div>
 
-                <div>
-                    
+                <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-2 rounded-lg mb-3'>
+                    <p className='text-xs font-bold mb-2'>Air Conditions</p>
+                    <div className='flex'>
+                        <div className='flex flex-col items-center'>
+                            <p className='text-sm'>Real Feel</p>
+                            <p className='text-xl text-gray-300'>31° C</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-2 rounded-lg'>
-                    <p className='text-sm font-semibold mb-2'>Today's Forecast</p>
+                    <p className='text-xs font-bold mb-2'>Today's Forecast</p>
                     <div className='flex mt-2'>
                         <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
                             <p className='text-sm mb-1'>6 AM</p>
