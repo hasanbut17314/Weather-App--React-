@@ -73,6 +73,7 @@ function Weather() {
     return (
         <>
         <div className='flex'>
+
            <aside className='bg-[#dee2e6] h-[96vh] w-[10%] mx-3 rounded-lg'>
                 <ul className='nav-cont px-2 py-2'>
                     <li className='m-logo'> <img className='h-logo' src={logo_png} /> </li>
@@ -81,10 +82,13 @@ function Weather() {
                     <li><a className='py-[12px] px-[9px]' href='#'> <img src={settings_svg} /> Settings </a></li>
                 </ul>
            </aside>
-           <section className='w-[55%] bg-[#dee2e6] p-3 rounded-lg mx-2'>
+
+           <section className='w-[65%] bg-[#dee2e6] p-3 rounded-lg mx-2'>
+
                 <div>
                     <input className='bg-gray-700 placeholder:text-gray-200 rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-white' type="text" placeholder='Search for a city' onChange={(e) => setCity(e.target.value)} />
                 </div>
+
                 <div className='flex justify-between p-4 bg-gray-900 text-gray-300 my-3 rounded-lg'>
                     <div>
                         <h1 className='text-2xl font-bold'>Madrid</h1>
@@ -95,7 +99,38 @@ function Weather() {
                         <img className='h-40' src={clear_png} />
                     </div>
                 </div>
+
+                <div>
+                    
+                </div>
+
+                <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-2 rounded-lg'>
+                    <p className='text-sm font-semibold mb-2'>Today's Forecast</p>
+                    <div className='flex mt-2'>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                    </div>
+                </div>
+
            </section> 
+
+           <section className='w-[25%] bg-[#dee2e6] p-3 rounded-lg mx-2'>
+
+           </section>
+
         </div>
         </>
     )
