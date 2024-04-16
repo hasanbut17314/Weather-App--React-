@@ -1,5 +1,7 @@
 import React from 'react'
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faCloudSunRain, faGear, faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye } from '@fortawesome/free-solid-svg-icons'
 import clear_png from '../pic/clear.png'
 import drizzle_png from '../pic/drizzle.png'
 import cloud_png from '../pic/cloud.png'
@@ -74,22 +76,22 @@ function Weather() {
         <>
         <div className='flex'>
 
-           <aside className='bg-[#dee2e6] h-[96vh] w-[10%] mx-3 rounded-lg'>
+           <aside className='bg-[#202B3B] text-[#9399a2ff] h-[96vh] w-[10%] mx-3 rounded-lg'>
                 <ul className='nav-cont px-2 py-2'>
                     <li className='m-logo'> <img className='h-logo' src={logo_png} /> </li>
-                    <li><a className='py-[14px] px-[9px] bg-[#ff6700]' href='#'> <img src={cloud_sun_svg} /> Weather</a> </li>
-                    <li><a className='py-[12px] px-[15px]' href='#'> <img src={list_svg} /> Cities</a> </li>
-                    <li><a className='py-[12px] px-[9px]' href='#'> <img src={settings_svg} /> Settings </a></li>
+                    <li><a className='py-[14px] px-[9px] text-white font-semibold' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faCloudSunRain} /> Weather</a> </li>
+                    <li><a className='py-[12px] px-[15px]' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faList} /> Cities</a> </li>
+                    <li><a className='py-[12px] px-[9px]' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faGear} /> Settings </a></li>
                 </ul>
            </aside>
 
-           <section className='w-[65%] bg-[#dee2e6] p-3 rounded-lg mx-2'>
+           <section className='w-[65%] p-3 rounded-lg mx-2'>
 
                 <div>
-                    <input className='bg-gray-700 placeholder:text-gray-200 rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-white' type="text" placeholder='Search for a city' onChange={(e) => setCity(e.target.value)} />
+                    <input className='bg-gray-700 placeholder:text-[#9399a2ff] rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-gray-300' type="text" placeholder='Search for a city' onChange={(e) => setCity(e.target.value)} />
                 </div>
 
-                <div className='flex justify-between p-4 bg-gray-900 text-gray-300 my-3 rounded-lg'>
+                <div className='flex justify-between p-4 text-gray-300 my-3 rounded-lg'>
                     <div>
                         <h1 className='text-2xl font-bold'>Madrid</h1>
                         <span className='text-xs mb-3'>Chances of rain: 0%</span>
@@ -100,18 +102,46 @@ function Weather() {
                     </div>
                 </div>
 
-                <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-2 rounded-lg mb-3'>
-                    <p className='text-xs font-bold mb-2'>Air Conditions</p>
-                    <div className='flex'>
-                        <div className='flex flex-col items-center'>
-                            <p className='text-sm'>Real Feel</p>
-                            <p className='text-xl text-gray-300'>31° C</p>
+                <div className='bg-[#202B3B] text-[#9399a2ff] px-5 py-2 rounded-lg mb-3'>
+                    <p className='text-xs font-bold mb-3'>Air Conditions</p>
+                    <div className='flex justify-between px-[1.6rem] mb-3'>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.4em] right-[69px]'><FontAwesomeIcon icon={faTemperatureThreeQuarters} /></span>
+                            <p className='text-sm mb-1'>Real Feel</p>
+                            <p className='text-xl text-gray-300 font-bold'>31° C</p>
+                        </div>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.2em] right-[62px]'><FontAwesomeIcon icon={faWind} /></span>
+                            <p className='text-sm mb-1'>Wind</p>
+                            <p className='text-xl text-gray-300 font-bold'>2 km/h</p>
+                        </div>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.2em] right-[69px]'><FontAwesomeIcon icon={faSun} /></span>
+                            <p className='text-sm mb-1'>UV Index</p>
+                            <p className='text-xl text-gray-300 font-bold'>2</p>
+                        </div>
+                    </div>
+                    <div className='flex justify-between px-[1.6rem] mt-[30px]'>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.2em] right-[101px]'><FontAwesomeIcon icon={faCloudRain} /></span>
+                            <p className='text-sm mb-1'>Rain Chances</p>
+                            <p className='text-xl text-gray-300 font-bold'>30%</p>
+                        </div>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.2em] right-[72px]'><FontAwesomeIcon icon={faDroplet} /></span>
+                            <p className='text-sm mb-1'>Humidity</p>
+                            <p className='text-xl text-gray-300 font-bold'>40%</p>
+                        </div>
+                        <div className='flex flex-col items-center relative'>
+                            <span className='absolute text-[1.2em] right-[63px]'><FontAwesomeIcon icon={faEye} /></span>
+                            <p className='text-sm mb-1'>Visibility</p>
+                            <p className='text-xl text-gray-300 font-bold'>10 km</p>
                         </div>
                     </div>
                 </div>
 
-                <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-2 rounded-lg'>
-                    <p className='text-xs font-bold mb-2'>Today's Forecast</p>
+                <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-[11px] rounded-lg'>
+                    <p className='text-xs font-bold mb-4'>Today's Forecast</p>
                     <div className='flex mt-2'>
                         <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
                             <p className='text-sm mb-1'>6 AM</p>
@@ -128,12 +158,42 @@ function Weather() {
                             <img className='h-[42px]' src={cloud_png} />
                             <p className='mt-2 text-lg text-white'>21°</p>
                         </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
+                        <div className='flex flex-col items-center justify-center mx-2 px-3 pe-5'>
+                            <p className='text-sm mb-1'>6 AM</p>
+                            <img className='h-[42px]' src={cloud_png} />
+                            <p className='mt-2 text-lg text-white'>21°</p>
+                        </div>
                     </div>
                 </div>
 
            </section> 
 
-           <section className='w-[25%] bg-[#dee2e6] p-3 rounded-lg mx-2'>
+           <section className='w-[25%] bg-[#202B3B] text-[#9399a2ff] p-3 h-[96vh] rounded-lg mx-2'>
 
            </section>
 
