@@ -9,6 +9,11 @@
   height: 100vh;
 }
 
+.active-link {
+  color: white;
+  font-weight: bold;
+}
+
 .nav-cont li{
   font-size: small;
   margin: 22px 0;

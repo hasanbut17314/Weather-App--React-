@@ -14,7 +14,8 @@ import logo_png from '../pic/logo.png'
 import cloud_sun_svg from '../pic/cloud-sun.svg'
 import settings_svg from '../pic/settings.svg'
 import list_svg from '../pic/list.svg'
-// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 function Weather() {
     const [city, setCity] = useState('')
@@ -74,16 +75,33 @@ function Weather() {
 
     return (
         <>
+        <Router>
         <div className='flex'>
-
-           <aside className='bg-[#202B3B] text-[#9399a2ff] h-[96vh] w-[10%] mx-3 rounded-lg'>
+            <aside className='bg-[#202B3B] text-[#9399a2ff] h-[96vh] w-[10%] mx-3 rounded-lg'>
                 <ul className='nav-cont px-2 py-2'>
-                    <li className='m-logo'> <img className='h-logo' src={logo_png} /> </li>
-                    <li><a className='py-[14px] px-[9px] text-white font-semibold' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faCloudSunRain} /> Weather</a> </li>
-                    <li><a className='py-[12px] px-[15px]' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faList} /> Cities</a> </li>
-                    <li><a className='py-[12px] px-[9px]' href='#'> <FontAwesomeIcon className='text-xl mb-2' icon={faGear} /> Settings </a></li>
+                    <li className='m-logo'>
+                        <img className='h-logo' src={logo_png} alt="Logo" />
+                    </li>
+                    <li>
+                        <NavLink activeClassName="active-link" className='py-[14px] px-[9px] ' to='/weather'>
+                        <FontAwesomeIcon className='text-xl mb-2' icon={faCloudSunRain} />
+                        Weather
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink activeClassName="active-link" className='py-[12px] px-[15px]' to='/cities'>
+                        <FontAwesomeIcon className='text-xl mb-2' icon={faList} />
+                        Cities
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink activeClassName="active-link" className='py-[12px] px-[9px]' to='/settings'>
+                        <FontAwesomeIcon className='text-xl mb-2' icon={faGear} />
+                        Settings
+                        </NavLink>
+                    </li>
                 </ul>
-           </aside>
+            </aside>
 
            <section className='w-[65%] p-3 rounded-lg mx-2'>
 
@@ -104,7 +122,7 @@ function Weather() {
 
                 <div className='bg-[#202B3B] text-[#9399a2ff] px-5 py-2 rounded-lg mb-3'>
                     <p className='text-xs font-bold mb-3'>Air Conditions</p>
-                    <div className='flex justify-between px-[1.6rem] mb-3'>
+                    <div className='grid md:grid-cols-3 grid-cols-2 place-items-center lg:gap-x-24 md:gap-x-16 md:gap-y-6 gap-y-4'>
                         <div className='flex flex-col items-center relative'>
                             <span className='absolute text-[1.4em] right-[69px]'><FontAwesomeIcon icon={faTemperatureThreeQuarters} /></span>
                             <p className='text-sm mb-1'>Real Feel</p>
@@ -120,15 +138,13 @@ function Weather() {
                             <p className='text-sm mb-1'>UV Index</p>
                             <p className='text-xl text-gray-300 font-bold'>2</p>
                         </div>
-                    </div>
-                    <div className='flex justify-between px-[1.6rem] mt-[30px]'>
                         <div className='flex flex-col items-center relative'>
                             <span className='absolute text-[1.2em] right-[101px]'><FontAwesomeIcon icon={faCloudRain} /></span>
                             <p className='text-sm mb-1'>Rain Chances</p>
                             <p className='text-xl text-gray-300 font-bold'>30%</p>
                         </div>
                         <div className='flex flex-col items-center relative'>
-                            <span className='absolute text-[1.2em] right-[72px]'><FontAwesomeIcon icon={faDroplet} /></span>
+                            <span className='absolute text-[1.1em] right-[68px]'><FontAwesomeIcon icon={faDroplet} /></span>
                             <p className='text-sm mb-1'>Humidity</p>
                             <p className='text-xl text-gray-300 font-bold'>40%</p>
                         </div>
@@ -196,8 +212,8 @@ function Weather() {
            <section className='w-[25%] bg-[#202B3B] text-[#9399a2ff] p-3 h-[96vh] rounded-lg mx-2'>
 
            </section>
-
         </div>
+        </Router>
         </>
     )
 }
