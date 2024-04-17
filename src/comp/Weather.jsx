@@ -11,9 +11,6 @@ import search_png from '../pic/search.png'
 import snow_png from '../pic/snow.png'
 import wind_png from '../pic/wind.png'
 import logo_png from '../pic/logo.png'
-import cloud_sun_svg from '../pic/cloud-sun.svg'
-import settings_svg from '../pic/settings.svg'
-import list_svg from '../pic/list.svg'
 import { NavLink } from 'react-router-dom';
 
 function Weather() {
