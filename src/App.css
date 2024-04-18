@@ -46,6 +46,40 @@
   margin: 13px 0 !important;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Adjust opacity as needed */
+  z-index: 49; /* Ensure it's behind the spinner */
+}
+
+.spin-loader {
+  position: fixed; /* Adjust if necessary */
+  top: 35%;
+  left: 45%;
+  z-index: 50;
+}
+
+.loader {
+  position: absolute;
+  border-top-color: #ffffff !important;
+  -webkit-animation: spinner 1.5s linear infinite;
+  animation: spinner 1.5s linear infinite;
+}
+
+@-webkit-keyframes spinner {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media screen and (max-width: 1070px) {
   #root{
     padding: 15px 27px;
@@ -62,5 +96,14 @@
 @media screen and (max-width: 768px) {
   #root{
     padding: 10px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .spin-loader {
+    position: fixed; /* Adjust if necessary */
+    top: 40%;
+    left: 38%;
+    z-index: 50;
   }
 }
