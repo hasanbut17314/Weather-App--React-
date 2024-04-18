@@ -1,64 +1,66 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faCloudSunRain, faGear, faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faList, faCloudSunRain, faGear, faBars } from '@fortawesome/free-solid-svg-icons'
 import { NavLink } from 'react-router-dom';
 import logo_png from '../pic/logo.png'
 import clear_png from '../pic/clear.png'
+import toggleMenu from './togglefunc'
 
 function Cities() {
     const [CurrentHour, setCurrentHour] = useState(new Date().getHours());
     const [CurrentMin, setCurrentMin] = useState(new Date().getMinutes());
     useEffect(() => {
         const timerID = setInterval(() => tick(), 1000);
-    
+
         return () => {
-          clearInterval(timerID);
+            clearInterval(timerID);
         };
-      }, []);
-      const tick = () => {
+    }, []);
+    const tick = () => {
         setCurrentHour(new Date().getHours());
         setCurrentMin(new Date().getMinutes());
-      };
+    };
     return (
         <>
-            <div className='flex'>
+            <div className='flex sm:flex-row flex-col'>
 
-                <aside className='bg-[#202B3B] text-[#9399a2ff] h-[96vh] w-[10%] mx-3 rounded-lg'>
+                <aside className='bg-[#202B3B] text-[#9399a2ff] md:h-[94vh] h-auto md:w-[10%] mx-3 rounded-lg md:block hidden md:static absolute top-[72px] left-[-2px] md:z-auto z-50 md:shadow-none shadow-2xl shadow-gray-900 sideBar'>
                     <ul className='nav-cont px-2 py-2'>
                         <li className='m-logo'>
                             <img className='h-logo' src={logo_png} alt="Logo" />
                         </li>
                         <li>
                             <NavLink className='py-[14px] px-[9px] ' to='/weather' end >
-                            <FontAwesomeIcon className='text-xl mb-2' icon={faCloudSunRain} />
-                            Weather
+                                <FontAwesomeIcon className='text-xl mb-2' icon={faCloudSunRain} />
+                                Weather
                             </NavLink>
                         </li>
                         <li>
                             <NavLink className='py-[12px] px-[15px]' to='/cities' end >
-                            <FontAwesomeIcon className='text-xl mb-2' icon={faList} />
-                            Cities
+                                <FontAwesomeIcon className='text-xl mb-2' icon={faList} />
+                                Cities
                             </NavLink>
                         </li>
                         <li>
                             <NavLink className='py-[12px] px-[9px]' to='/settings' end >
-                            <FontAwesomeIcon className='text-xl mb-2' icon={faGear} />
-                            Settings
+                                <FontAwesomeIcon className='text-xl mb-2' icon={faGear} />
+                                Settings
                             </NavLink>
                         </li>
                     </ul>
                 </aside>
 
-                <section className='w-[55%] p-3 rounded-lg mx-2'>
+                <section className='md:w-[55%] sm:w-[58%] p-3 rounded-lg md:mx-2'>
 
-                    <div>
+                    <div className='flex items-center'>
+                        <button onClick={toggleMenu} className='block md:hidden text-gray-200 me-2'><FontAwesomeIcon className=' h-6 mt-2' icon={faBars} /></button>
                         <input className='bg-gray-700 placeholder:text-[#9399a2ff] rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-gray-300' type="text" placeholder='Search for a city' onChange={(e) => setCity(e.target.value)} />
                     </div>
 
                     <div className='py-3'>
                         <div className='flex items-center bg-[#202B3B] text-[#bbc2cd] py-2 md:px-5 px-4 rounded-lg mt-2'>
-                            <img className='h-28' src={clear_png} />
+                            <img className='sm:h-28 h-[88px]' src={clear_png} />
                             <div className='ms-3'>
                                 <p className='text-xl font-bold'>Madrid</p>
                                 <small>{CurrentHour + ":" + CurrentMin}</small>
@@ -66,7 +68,7 @@ function Cities() {
                             <p className='ms-auto text-2xl font-semibold'>31°</p>
                         </div>
                         <div className='flex items-center bg-[#202B3B] text-[#bbc2cd] py-2 md:px-5 px-4 rounded-lg md:my-5 my-4'>
-                            <img className='h-28' src={clear_png} />
+                            <img className='sm:h-28 h-[88px]' src={clear_png} />
                             <div className='ms-3'>
                                 <p className='text-xl font-bold'>Lahore</p>
                                 <small>{CurrentHour + ":" + CurrentMin}</small>
@@ -74,7 +76,7 @@ function Cities() {
                             <p className='ms-auto text-2xl font-semibold'>37°</p>
                         </div>
                         <div className='flex items-center bg-[#202B3B] text-[#bbc2cd] py-2 md:px-5 px-4 rounded-lg'>
-                            <img className='h-28' src={clear_png} />
+                            <img className='sm:h-28 h-[88px]' src={clear_png} />
                             <div className='ms-3'>
                                 <p className='text-xl font-bold'>Karachi</p>
                                 <small>{CurrentHour + ":" + CurrentMin}</small>
@@ -85,7 +87,7 @@ function Cities() {
 
                 </section>
 
-                <section className='w-[35%] text-gray-300 md:px-[40px] px-4 py-5 h-[96vh] rounded-lg mx-2'>
+                <section className='md:w-[35%] sm:w-[42%] text-gray-300 md:px-[40px] px-4 md:py-5 py-4 sm:h-[94vh] rounded-lg mx-2 sm:overflow-auto'>
                     <div className='flex justify-between md:px-3 px-2'>
                         <div>
                             <h1 className='text-2xl font-bold'>Madrid</h1>
@@ -93,13 +95,13 @@ function Cities() {
                             <h1 className='text-3xl font-black mt-[23px]'>31° C</h1>
                         </div>
                         <div>
-                            <img className='h-32' src={clear_png} />
+                            <img className='sm:h-32 h-24' src={clear_png} />
                         </div>
                     </div>
                     <hr className='my-4 border-gray-500' />
                     <div className='py-4'>
                         <p className='text-xs font-bold mb-4'>Today's Forecast</p>
-                        <div className='flex mt-2'>
+                        <div className='flex mt-2 overflow-x-auto'>
                             <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
                                 <p className='text-sm mb-1'>6 AM</p>
                                 <img className='h-[42px]' src={clear_png} />
