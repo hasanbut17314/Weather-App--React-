@@ -46,7 +46,7 @@ function Weather() {
                     hourlyForecastData = await hourlyForecastResponse.json();
                     const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords}&days=7&aqi=no&alerts=no`);
                     dailyForecastData = await dailyForecastResponse.json();
-                    setCity(currentWeatherData.location.name);
+                    setCity(currentWeatherData.name);
 
                 } else {
 
@@ -168,8 +168,10 @@ function Weather() {
                     <div className='flex justify-between px-4 py-2 text-gray-300 my-2 rounded-lg'>
                         <div>
                             <h1 className='text-2xl font-bold'>{city}</h1>
-                            <span className='text-xs mb-3'>Chances of rain: {rainchance}</span>
-                            <h1 className='text-3xl font-black mt-[50px]'>{temp}° C</h1>
+                            <span className='text-xs mb-3'>Chances of rain: {rainChance}%</span>
+                            <h1 className='text-3xl font-black mt-[50px]'>{
+                                currentWeather !== null ? (currentWeather.temp_c+"° C") : ('--')
+                            }</h1>
                         </div>
                         <div>
                             <img className='sm:h-40 h-32' src={currenticon} />
@@ -182,32 +184,42 @@ function Weather() {
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-start'>
                                 <span className='absolute text-[1.4em] right-[69px]'><FontAwesomeIcon icon={faTemperatureThreeQuarters} /></span>
                                 <p className='text-sm mb-1'>Real Feel</p>
-                                <p className='text-xl text-gray-300 font-bold'>{feel}°</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                currentWeather !== null ? (currentWeather.feelslike_c+"°") : ('--')
+                            }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
                                 <span className='absolute text-[1.2em] right-[62px]'><FontAwesomeIcon icon={faWind} /></span>
                                 <p className='text-sm mb-1'>Wind</p>
-                                <p className='text-xl text-gray-300 font-bold'>{wind} km/h</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                currentWeather !== null ? (currentWeather.wind_kph+" km/h") : ('--')
+                            }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-start'>
                                 <span className='absolute text-[1.2em] right-[69px]'><FontAwesomeIcon icon={faSun} /></span>
                                 <p className='text-sm mb-1'>UV Index</p>
-                                <p className='text-xl text-gray-300 font-bold'>{uv}</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                currentWeather !== null ? (currentWeather.uv) : ('--')
+                            }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
                                 <span className='absolute text-[1.2em] right-[101px]'><FontAwesomeIcon icon={faCloudRain} /></span>
                                 <p className='text-sm mb-1'>Rain Chances</p>
-                                <p className='text-xl text-gray-300 font-bold'>{rainchance}%</p>
+                                <p className='text-xl text-gray-300 font-bold'>{rainChance}%</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-start'>
                                 <span className='absolute text-[1.1em] right-[68px]'><FontAwesomeIcon icon={faDroplet} /></span>
                                 <p className='text-sm mb-1'>Humidity</p>
-                                <p className='text-xl text-gray-300 font-bold'>{hum}%</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                currentWeather !== null ? (currentWeather.humidity+"%") : ('--')
+                            }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
                                 <span className='absolute text-[1.2em] right-[63px]'><FontAwesomeIcon icon={faEye} /></span>
                                 <p className='text-sm mb-1'>Visibility</p>
-                                <p className='text-xl text-gray-300 font-bold'>{visb}</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                currentWeather !== null ? (currentWeather.vis_km+" km") : ('--')
+                            }</p>
                             </div>
                         </div>
                     </div>
