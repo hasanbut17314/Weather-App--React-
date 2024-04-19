@@ -19,41 +19,55 @@ function Weather() {
     const [loader, setLoader] = useState(false)
     const [error, setError] = useState(null)
     const [city, setCity] = useState('--')
-    const [temp, setTemp] = useState('--')
-    const [rainchance, setRainchance] = useState('0%')
     const [currenticon, setCurrenticon] = useState(clear_png)
-    const [feel, setFeel] = useState('--')
-    const [wind, setWind] = useState('--')
-    const [uv, setUv] = useState('--')
-    const [hum, setHum] = useState('--')
-    const [visb, setVisb] = useState('--')
+    const [currentWeather, setCurrentWeather] = useState(null)
+    const [hourlyForecast, setHourlyForecast] = useState(null)
+    const [dailyForecast, setDailyForecast] = useState(null)
+    const [rainChance, setRainChance] = useState(0)
 
-    const APIkey = '1eddff9310d18c1db6301d708e4b1374';
+    const APIkey = '4e28863b30304987bde110342241904';
 
     useEffect(() => {
         async function forecast() {
             try {
+
                 setLoader(true);
                 const coords = await requestLocationPermission();
-                let response;
-                if (coords) {
-                    response = await fetchWeatherAPI(coords.latitude, coords.longitude);
+                let currentWeatherData;
+                let hourlyForecastData;
+                let dailyForecastData;
+
+                if (coords !== undefined || coords !== null) {
+
+                    console.log(coords);
+                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords}`);
+                    currentWeatherData = await currentWeatherResponse.json();
+                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords}&days=1&aqi=no&alerts=no`);
+                    hourlyForecastData = await hourlyForecastResponse.json();
+                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords}&days=7&aqi=no&alerts=no`);
+                    dailyForecastData = await dailyForecastResponse.json();
+                    setCity(currentWeatherData.location.name);
+
                 } else {
-                    response = await fetchWeatherAPIWithoutPos(city);
+
+                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
+                    currentWeatherData = await currentWeatherResponse.json();
+                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
+                    hourlyForecastData = await hourlyForecastResponse.json();
+                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=7&aqi=no&alerts=no`);
+                    dailyForecastData = await dailyForecastResponse.json();
+
                 }
 
                 setLoader(false);
+                setCurrentWeather(currentWeatherData.current);
+                setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
+                setDailyForecast(dailyForecastData.forecast.forecastday);
+                const precip_mm = currentWeatherData.current.precip_mm;
+                const chanceOfRain = precip_mm > 0 ? Math.min(100, precip_mm * 10) : 0;
+                setRainChance(chanceOfRain);
 
-                setTemp(response.main.temp);
-                setCity(response.name);
-                setUv(response.uvi);
-                setRainchance(response.weather[0].main.rain);
-                setHum(response.humidity);
-                setVisb(response.visibility);
-                setWind(Math.round(response.wind.speed * 3.6));
-                setFeel(response.main.feels_like);
-
-                setCurrenticon(getWeatherIcon(response.weather[0].icon));
+                setCurrenticon(getWeatherIcon(currentWeather.condition.code));
 
 
             } catch (error) {
@@ -68,21 +82,17 @@ function Weather() {
     }, []);
 
     const getWeatherIcon = (iconCode) => {
-        if (iconCode === '01d' || iconCode === '01n') {
+        if (iconCode === '1000') {
             return (clear_png)
-        } else if (iconCode === '02d' || iconCode === '02n') {
+        } else if (iconCode === '1003' || iconCode === '1006' || iconCode === '1009') {
             return (cloud_png)
-        } else if (iconCode === '03d' || iconCode === '03n') {
+        } else if (iconCode === '1030' || iconCode === '1135' || iconCode === '1147') {
+            return (humidity_png)
+        } else if (iconCode === '1063' || iconCode == '1069' || iconCode == '1072' || iconCode === '1150' || iconCode === '1153' || iconCode === '1168' || iconCode === '1171' || iconCode === '1180'  || iconCode === '1183'  || iconCode === '1186' || iconCode === '1240' || iconCode === '1249') {
             return (drizzle_png)
-        } else if (iconCode === '04d' || iconCode === '04n') {
-            return (cloud_png)
-        } else if (iconCode === '09d' || iconCode === '09n') {
+        } else if (iconCode === '1087' || iconCode === '1189' || iconCode === '1192' || iconCode === '1195' || iconCode === '1198' || iconCode === '1201' || iconCode === '1243' || iconCode === '1246' || iconCode === '1273'  || iconCode === '1276') {
             return (rain_png)
-        } else if (iconCode === '10d' || iconCode === '10n') {
-            return (rain_png)
-        } else if (iconCode === '07d' || iconCode === '07n') {
-            return (clear_png)
-        } else if (iconCode === '13d' || iconCode === '13n') {
+        } else if (iconCode === '1066' || iconCode === '1114' || iconCode === '1117' || iconCode === '1204' || iconCode === '1207' || iconCode === '1210' || iconCode === '1213' || iconCode === '1216' || iconCode === '1219' || iconCode === '1222' || iconCode === '1225' || iconCode === '1237' || iconCode === '1252' || iconCode === '1255' || iconCode === '1258' || iconCode === '1261' || iconCode === '1264' || iconCode === '1279' || iconCode === '1282') {
             return (snow_png)
         }
         else {
@@ -101,22 +111,6 @@ function Weather() {
                 reject(new Error('Geolocation is not supported'));
             }
         });
-    };
-
-    const fetchWeatherAPI = async (latitude, longitude) => {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${APIkey}&units=metric`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch weather data');
-        }
-        return response.json();
-    };
-
-    const fetchWeatherAPIWithoutPos = async (city) => {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIkey}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch weather data');
-        }
-        return response.json();
     };
 
     const handleRetry = () => {
