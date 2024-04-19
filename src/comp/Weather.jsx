@@ -21,9 +21,8 @@ function Weather() {
     const [city, setCity] = useState('--')
     const [currenticon, setCurrenticon] = useState(clear_png)
     const [currentWeather, setCurrentWeather] = useState(null)
-    const [hourlyForecast, setHourlyForecast] = useState(null)
+    const [hourlyForecast, setHourlyForecast] = useState([])
     const [dailyForecast, setDailyForecast] = useState(null)
-    const [rainChance, setRainChance] = useState(0)
 
     const APIkey = '4e28863b30304987bde110342241904';
 
@@ -39,14 +38,13 @@ function Weather() {
 
                 if (coords !== undefined || coords !== null) {
 
-                    console.log(coords);
-                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords}`);
+                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}`);
                     currentWeatherData = await currentWeatherResponse.json();
-                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords}&days=1&aqi=no&alerts=no`);
+                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=1&aqi=no&alerts=no`);
                     hourlyForecastData = await hourlyForecastResponse.json();
-                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords}&days=7&aqi=no&alerts=no`);
+                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=7&aqi=no&alerts=no`);
                     dailyForecastData = await dailyForecastResponse.json();
-                    setCity(currentWeatherData.name);
+                    setCity(currentWeatherData.location.name);
 
                 } else {
 
@@ -62,12 +60,9 @@ function Weather() {
                 setLoader(false);
                 setCurrentWeather(currentWeatherData.current);
                 setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
-                setDailyForecast(dailyForecastData.forecast.forecastday);
-                const precip_mm = currentWeatherData.current.precip_mm;
-                const chanceOfRain = precip_mm > 0 ? Math.min(100, precip_mm * 10) : 0;
-                setRainChance(chanceOfRain);
+                setDailyForecast(dailyForecastData.forecast.forecastday.slice(1, 8));
 
-                setCurrenticon(getWeatherIcon(currentWeather.condition.code));
+                setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
 
 
             } catch (error) {
@@ -82,23 +77,23 @@ function Weather() {
     }, []);
 
     const getWeatherIcon = (iconCode) => {
-        if (iconCode === '1000') {
-            return (clear_png)
-        } else if (iconCode === '1003' || iconCode === '1006' || iconCode === '1009') {
-            return (cloud_png)
-        } else if (iconCode === '1030' || iconCode === '1135' || iconCode === '1147') {
-            return (humidity_png)
-        } else if (iconCode === '1063' || iconCode == '1069' || iconCode == '1072' || iconCode === '1150' || iconCode === '1153' || iconCode === '1168' || iconCode === '1171' || iconCode === '1180'  || iconCode === '1183'  || iconCode === '1186' || iconCode === '1240' || iconCode === '1249') {
-            return (drizzle_png)
-        } else if (iconCode === '1087' || iconCode === '1189' || iconCode === '1192' || iconCode === '1195' || iconCode === '1198' || iconCode === '1201' || iconCode === '1243' || iconCode === '1246' || iconCode === '1273'  || iconCode === '1276') {
-            return (rain_png)
-        } else if (iconCode === '1066' || iconCode === '1114' || iconCode === '1117' || iconCode === '1204' || iconCode === '1207' || iconCode === '1210' || iconCode === '1213' || iconCode === '1216' || iconCode === '1219' || iconCode === '1222' || iconCode === '1225' || iconCode === '1237' || iconCode === '1252' || iconCode === '1255' || iconCode === '1258' || iconCode === '1261' || iconCode === '1264' || iconCode === '1279' || iconCode === '1282') {
-            return (snow_png)
-        }
-        else {
-            return (clear_png)
+        if (iconCode === 1000) {
+            return clear_png;
+        } else if (iconCode === 1003 || iconCode === 1006 || iconCode === 1009) {
+            return cloud_png;
+        } else if (iconCode === 1030 || iconCode === 1135 || iconCode === 1147) {
+            return humidity_png;
+        } else if (iconCode === 1063 || iconCode === 1069 || iconCode === 1072 || iconCode === 1150 || iconCode === 1153 || iconCode === 1168 || iconCode === 1171 || iconCode === 1180 || iconCode === 1183 || iconCode === 1186 || iconCode === 1240 || iconCode === 1249) {
+            return drizzle_png;
+        } else if (iconCode === 1087 || iconCode === 1189 || iconCode === 1192 || iconCode === 1195 || iconCode === 1198 || iconCode === 1201 || iconCode === 1243 || iconCode === 1246 || iconCode === 1273 || iconCode === 1276) {
+            return rain_png;
+        } else if (iconCode === 1066 || iconCode === 1114 || iconCode === 1117 || iconCode === 1204 || iconCode === 1207 || iconCode === 1210 || iconCode === 1213 || iconCode === 1216 || iconCode === 1219 || iconCode === 1222 || iconCode === 1225 || iconCode === 1237 || iconCode === 1252 || iconCode === 1255 || iconCode === 1258 || iconCode === 1261 || iconCode === 1264 || iconCode === 1279 || iconCode === 1282) {
+            return snow_png;
+        } else {
+            return clear_png;
         }
     };
+
 
     const requestLocationPermission = async () => {
         return new Promise((resolve, reject) => {
@@ -116,6 +111,24 @@ function Weather() {
     const handleRetry = () => {
         setError(null);
         forecast();
+    };
+
+    const renderHourlyForecast = () => {
+
+        return hourlyForecast.slice(0, 10).map((hourData, index) => (
+            <div key={index} className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] ps-2.5 pe-[27px]'>
+                <p className='text-sm mb-1'>{getHourText(index)}</p>
+                <img className='min-w-[60px]' src={hourData.condition.icon} alt='Weather Icon' />
+                <p className='mt-2 text-lg text-white'>{Math.round(hourData.temp_c)}°</p>
+            </div>
+        ));
+    };
+
+    const getHourText = (index) => {
+        const currentHour = new Date().getHours();
+        const forecastHour = (currentHour + (index + 1) * 2) % 12 || 12;
+        const period = currentHour + (index + 1) * 2 < 12 ? 'AM' : 'PM';
+        return `${forecastHour} ${period}`;
     };
 
     return (
@@ -168,13 +181,15 @@ function Weather() {
                     <div className='flex justify-between px-4 py-2 text-gray-300 my-2 rounded-lg'>
                         <div>
                             <h1 className='text-2xl font-bold'>{city}</h1>
-                            <span className='text-xs mb-3'>Chances of rain: {rainChance}%</span>
+                            <span className='text-xs mb-3'>rain: {
+                                currentWeather !== null ? (currentWeather.precip_mm + " mm") : ('--')
+                            }</span>
                             <h1 className='text-3xl font-black mt-[50px]'>{
-                                currentWeather !== null ? (currentWeather.temp_c+"° C") : ('--')
+                                currentWeather !== null ? (currentWeather.temp_c + "° C") : ('--')
                             }</h1>
                         </div>
                         <div>
-                            <img className='sm:h-40 h-32' src={currenticon} />
+                            <img className='sm:h-[150px] h-32' src={currenticon} />
                         </div>
                     </div>
 
@@ -185,93 +200,55 @@ function Weather() {
                                 <span className='absolute text-[1.4em] right-[69px]'><FontAwesomeIcon icon={faTemperatureThreeQuarters} /></span>
                                 <p className='text-sm mb-1'>Real Feel</p>
                                 <p className='text-xl text-gray-300 font-bold'>{
-                                currentWeather !== null ? (currentWeather.feelslike_c+"°") : ('--')
-                            }</p>
+                                    currentWeather !== null ? (currentWeather.feelslike_c + "°") : ('--')
+                                }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
                                 <span className='absolute text-[1.2em] right-[62px]'><FontAwesomeIcon icon={faWind} /></span>
                                 <p className='text-sm mb-1'>Wind</p>
                                 <p className='text-xl text-gray-300 font-bold'>{
-                                currentWeather !== null ? (currentWeather.wind_kph+" km/h") : ('--')
-                            }</p>
+                                    currentWeather !== null ? (currentWeather.wind_kph) : ('--')
+                                }<span className='text-sm'> km/h</span></p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-start'>
                                 <span className='absolute text-[1.2em] right-[69px]'><FontAwesomeIcon icon={faSun} /></span>
                                 <p className='text-sm mb-1'>UV Index</p>
                                 <p className='text-xl text-gray-300 font-bold'>{
-                                currentWeather !== null ? (currentWeather.uv) : ('--')
-                            }</p>
+                                    currentWeather !== null ? (currentWeather.uv) : ('--')
+                                }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
-                                <span className='absolute text-[1.2em] right-[101px]'><FontAwesomeIcon icon={faCloudRain} /></span>
-                                <p className='text-sm mb-1'>Rain Chances</p>
-                                <p className='text-xl text-gray-300 font-bold'>{rainChance}%</p>
+                                <span className='absolute text-[1.2em] right-[83px]'><FontAwesomeIcon icon={faCloudRain} /></span>
+                                <p className='text-sm mb-1'>Preciption</p>
+                                <p className='text-xl text-gray-300 font-bold'>{
+                                    currentWeather !== null ? (currentWeather.precip_mm) : ('--')
+                                }<span className='text-sm'> mm</span></p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-start'>
                                 <span className='absolute text-[1.1em] right-[68px]'><FontAwesomeIcon icon={faDroplet} /></span>
                                 <p className='text-sm mb-1'>Humidity</p>
                                 <p className='text-xl text-gray-300 font-bold'>{
-                                currentWeather !== null ? (currentWeather.humidity+"%") : ('--')
-                            }</p>
+                                    currentWeather !== null ? (currentWeather.humidity + "%") : ('--')
+                                }</p>
                             </div>
                             <div className='flex flex-col items-center relative md:justify-self-auto justify-self-end'>
                                 <span className='absolute text-[1.2em] right-[63px]'><FontAwesomeIcon icon={faEye} /></span>
                                 <p className='text-sm mb-1'>Visibility</p>
                                 <p className='text-xl text-gray-300 font-bold'>{
-                                currentWeather !== null ? (currentWeather.vis_km+" km") : ('--')
-                            }</p>
+                                    currentWeather !== null ? (currentWeather.vis_km) : ('--')
+                                }<span className='text-sm'> km</span></p>
                             </div>
                         </div>
                     </div>
 
                     <div className='bg-[#202B3B] text-[#9399a2ff] px-3 py-[11px] rounded-lg'>
                         <p className='text-xs font-bold mb-4'>Today's Forecast</p>
-                        <div className='flex mt-2 overflow-auto'>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
-                            <div className='flex flex-col items-center justify-center mx-2 px-3 pe-5'>
-                                <p className='text-sm mb-1'>6 AM</p>
-                                <img className='h-[42px]' src={cloud_png} />
-                                <p className='mt-2 text-lg text-white'>21°</p>
-                            </div>
+                        <div className='flex mt-2 overflow-auto today_forecast'>
+                            {hourlyForecast.length !== 0 ? renderHourlyForecast() : (
+                                <div>
+                                    <p className='w-full flex justify-center items-center'>Select City to see Forecast</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

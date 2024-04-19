@@ -70,6 +70,20 @@
   animation: spinner 1.5s linear infinite;
 }
 
+.today_forecast::-webkit-scrollbar-thumb {
+    background-color: #a09f9f7b;
+    border-radius: 33px;
+}
+
+.today_forecast::-webkit-scrollbar {
+    height: 5px !important;
+    border-radius: 20px !important;
+} 
+
+.today_forecast:hover {
+  cursor: all-scroll;
+}
+
 @-webkit-keyframes spinner {
   0% { -webkit-transform: rotate(0deg); }
   100% { -webkit-transform: rotate(360deg); }
@@ -101,7 +115,7 @@
 
 @media screen and (max-width: 500px) {
   .spin-loader {
-    position: fixed; /* Adjust if necessary */
+    position: fixed;
     top: 40%;
     left: 38%;
     z-index: 50;
