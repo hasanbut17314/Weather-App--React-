@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faCloudSunRain, faGear, faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye, faBars } from '@fortawesome/free-solid-svg-icons'
+import { faList, faCloudSunRain, faGear, faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye, faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import clear_png from '../pic/clear.png'
 import drizzle_png from '../pic/drizzle.png'
 import cloud_png from '../pic/cloud.png'
@@ -16,6 +16,30 @@ import { NavLink } from 'react-router-dom';
 
 function Weather() {
 
+    const [seacrhBtn, setSeacrhBtn] = useState(false);
+
+    function handleInputChange () {
+        let city_input = document.querySelector('.city_input');
+        if(city_input.value !== '') {
+            setSeacrhBtn(true);
+            city_input.classList.add('rounded-e-none');
+            setCity(city_input.value);
+        } else {
+            setSeacrhBtn(false)
+            setCity('--')
+            city_input.classList.remove('rounded-e-none');
+        }
+    }
+
+    const handleSearch = () => {
+        let city_input = document.querySelector('.city_input').value;
+        setCity(city_input);
+        forecast();
+        document.querySelector('.city_input').value = '';
+        setSeacrhBtn(false)
+        document.querySelector('.city_input').classList.remove('rounded-e-none');
+    };
+
     const [loader, setLoader] = useState(false)
     const [error, setError] = useState(null)
     const [city, setCity] = useState('--')
@@ -26,52 +50,53 @@ function Weather() {
 
     const APIkey = '4e28863b30304987bde110342241904';
 
-    useEffect(() => {
-        async function forecast() {
-            try {
+    async function forecast() {
+        try {
 
-                setLoader(true);
-                const coords = await requestLocationPermission();
-                let currentWeatherData;
-                let hourlyForecastData;
-                let dailyForecastData;
+            setLoader(true);
+            const coords = await requestLocationPermission();
+            let currentWeatherData;
+            let hourlyForecastData;
+            let dailyForecastData;
 
-                if (coords !== undefined || coords !== null) {
+            if ((coords !== undefined || coords !== null) && city === '--') {
 
-                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}`);
-                    currentWeatherData = await currentWeatherResponse.json();
-                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=1&aqi=no&alerts=no`);
-                    hourlyForecastData = await hourlyForecastResponse.json();
-                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=7&aqi=no&alerts=no`);
-                    dailyForecastData = await dailyForecastResponse.json();
-                    setCity(currentWeatherData.location.name);
+                const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}`);
+                currentWeatherData = await currentWeatherResponse.json();
+                const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=1&aqi=no&alerts=no`);
+                hourlyForecastData = await hourlyForecastResponse.json();
+                const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=7&aqi=no&alerts=no`);
+                dailyForecastData = await dailyForecastResponse.json();
+                setCity(currentWeatherData.location.name);
 
-                } else {
+            } else {
 
-                    const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
-                    currentWeatherData = await currentWeatherResponse.json();
-                    const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
-                    hourlyForecastData = await hourlyForecastResponse.json();
-                    const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=7&aqi=no&alerts=no`);
-                    dailyForecastData = await dailyForecastResponse.json();
+                const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
+                currentWeatherData = await currentWeatherResponse.json();
+                const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
+                hourlyForecastData = await hourlyForecastResponse.json();
+                const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=7&aqi=no&alerts=no`);
+                dailyForecastData = await dailyForecastResponse.json();
 
-                }
-
-                setLoader(false);
-                setCurrentWeather(currentWeatherData.current);
-                setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
-                setDailyForecast(dailyForecastData.forecast.forecastday.slice(1, 8));
-
-                setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
-
-
-            } catch (error) {
-                setLoader(false)
-                setError(error.message)
-                console.log('error ocuured during fetch ', error)
             }
-        }
 
+            setLoader(false);
+            setCurrentWeather(currentWeatherData.current);
+            setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
+            setDailyForecast(dailyForecastData.forecast.forecastday.slice(1, 8));
+
+            setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+
+
+        } catch (error) {
+            setLoader(false)
+            setError(error.message)
+            console.log('error ocuured during fetch ', error)
+        }
+    }
+
+    useEffect(() => {
+        
         forecast();
 
     }, []);
@@ -127,9 +152,9 @@ function Weather() {
     const getHourText = (index) => {
         const currentHour = new Date().getHours();
         const forecastHour = (currentHour + (index + 1) * 2) % 12 || 12;
-        const period = currentHour + (index + 1) * 2 < 12 ? 'AM' : 'PM';
+        const period = currentHour + (index + 1) * 2 < 12 || currentHour + (index + 1) * 2 >= 24 ? 'AM' : 'PM';
         return `${forecastHour} ${period}`;
-    };
+    };    
 
     return (
         <>
@@ -175,7 +200,12 @@ function Weather() {
 
                     <div className='flex items-center'>
                         <button onClick={toggleMenu} className='block md:hidden text-gray-200 me-2'><FontAwesomeIcon className=' h-6 mt-2' icon={faBars} /></button>
-                        <input className='bg-gray-700 placeholder:text-[#9399a2ff] rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-gray-300' type="text" placeholder='Search for a city' onChange={(e) => setCity(e.target.value)} />
+                        <input className='bg-gray-700 placeholder:text-[#9399a2ff] rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-gray-300 city_input' type="text" placeholder='Search for a city' onChange={handleInputChange} />
+                        {seacrhBtn ? (
+                            <button className='px-3 py-2 rounded-s-none border-s border-gray-500 rounded-md bg-gray-700 text-gray-300 mt-1 search_city_btn' onClick={handleSearch}><FontAwesomeIcon icon={faMagnifyingGlass} /></button>
+                        ): (
+                            null
+                        )}
                     </div>
 
                     <div className='flex justify-between px-4 py-2 text-gray-300 my-2 rounded-lg'>
