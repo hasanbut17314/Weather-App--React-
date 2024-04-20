@@ -21,10 +21,10 @@ function GetStarted() {
                         <img className='h-20' src={logo_png} />
                         <p className='text-xs text-gray-400 font-semibold'>Weather App</p>
                     </div>
-                    <q className='text-center text-sm'>note: all the displayed data including weather predictions, air conditions and alerts in this app are provided by <a className='underline' href='https://openweathermap.org/'>OpenWeather</a>. credits and copyrights are subject to OpenWeather Api which is accessible for anyone on their platform</q>
+                    <q className='text-center text-sm'>note: all the displayed data including weather predictions, air conditions and alerts in this app are provided by <a className='underline' href='https://www.weatherapi.com/'>weatherapi</a>. credits and copyrights are subject to weatherapi.com's Api which is accessible for anyone on their platform</q>
                     <div className='flex flex-col'>
                         <div>
-                            <input className='me-2' onChange={handleCheckboxChange} checked={isChecked} type='checkbox' id='privacy' required /> <label>I accept <a href='https://openweather.co.uk/privacy-policy' className='text-blue-400 underline'>Privacy and Policy</a> before using Hammy's Weather App</label>
+                            <input className='me-2' onChange={handleCheckboxChange} checked={isChecked} type='checkbox' id='privacy' required /> <label>I accept <a href='https://www.weatherapi.com/privacy.aspx' className='text-blue-400 underline'>Privacy and Policy</a> before using Hammy's Weather App</label>
                         </div>
                         <div className='flex justify-center'>
                             <button className={`bg-[#05999c] text-white py-2 px-3 rounded-3xl mt-4 self-center ${!isChecked ? 'opacity-50 cursor-not-allowed' : ''}`} id='getStart'>
