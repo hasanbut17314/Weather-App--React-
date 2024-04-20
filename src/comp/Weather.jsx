@@ -63,7 +63,7 @@ function Weather() {
 
             if ((coords !== undefined || coords !== null) && city === '--') {
 
-                const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}`);
+                const currentWeatherResponse = await fetch(`https://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}`);
                 currentWeatherData = await currentWeatherResponse.json();
                 const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${coords.latitude + ',' + coords.longitude}&days=1&aqi=no&alerts=no`);
                 hourlyForecastData = await hourlyForecastResponse.json();
@@ -95,7 +95,7 @@ function Weather() {
             let hourlyForecastData;
             let dailyForecastData;
     
-            const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
+            const currentWeatherResponse = await fetch(`https://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
             currentWeatherData = await currentWeatherResponse.json();
             const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
             hourlyForecastData = await hourlyForecastResponse.json();
