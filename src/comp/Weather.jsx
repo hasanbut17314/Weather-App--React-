@@ -18,12 +18,12 @@ function Weather() {
 
     const [seacrhBtn, setSeacrhBtn] = useState(false);
 
-    function handleInputChange () {
+    function handleInputChange(event) {
         let city_input = document.querySelector('.city_input');
-        if(city_input.value !== '') {
+        if (city_input.value !== '') {
             setSeacrhBtn(true);
             city_input.classList.add('rounded-e-none');
-            setCity(city_input.value);
+            setCity(event.target.value);
         } else {
             setSeacrhBtn(false)
             setCity('--')
@@ -31,13 +31,15 @@ function Weather() {
         }
     }
 
-    const handleSearch = () => {
-        let city_input = document.querySelector('.city_input').value;
-        setCity(city_input);
-        forecast();
-        document.querySelector('.city_input').value = '';
-        setSeacrhBtn(false)
-        document.querySelector('.city_input').classList.remove('rounded-e-none');
+    const handleSearch = async () => {
+        try {
+            await forecastManual(city);
+            document.querySelector('.city_input').value = '';
+            setSeacrhBtn(false)
+            document.querySelector('.city_input').classList.remove('rounded-e-none');
+        } catch (error) {
+            console.error('Error fetching forecast:', error);
+        }
     };
 
     const [loader, setLoader] = useState(false)
@@ -46,7 +48,7 @@ function Weather() {
     const [currenticon, setCurrenticon] = useState(clear_png)
     const [currentWeather, setCurrentWeather] = useState(null)
     const [hourlyForecast, setHourlyForecast] = useState([])
-    const [dailyForecast, setDailyForecast] = useState(null)
+    const [dailyForecast, setDailyForecast] = useState([])
 
     const APIkey = '4e28863b30304987bde110342241904';
 
@@ -69,21 +71,12 @@ function Weather() {
                 dailyForecastData = await dailyForecastResponse.json();
                 setCity(currentWeatherData.location.name);
 
-            } else {
-
-                const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
-                currentWeatherData = await currentWeatherResponse.json();
-                const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
-                hourlyForecastData = await hourlyForecastResponse.json();
-                const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=7&aqi=no&alerts=no`);
-                dailyForecastData = await dailyForecastResponse.json();
-
             }
 
             setLoader(false);
             setCurrentWeather(currentWeatherData.current);
             setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
-            setDailyForecast(dailyForecastData.forecast.forecastday.slice(1, 8));
+            setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
 
             setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
 
@@ -95,8 +88,36 @@ function Weather() {
         }
     }
 
+    async function forecastManual(city) {
+        try {
+            setLoader(true);
+            let currentWeatherData;
+            let hourlyForecastData;
+            let dailyForecastData;
+    
+            const currentWeatherResponse = await fetch(`http://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
+            currentWeatherData = await currentWeatherResponse.json();
+            const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
+            hourlyForecastData = await hourlyForecastResponse.json();
+            const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=10&aqi=no&alerts=no`);
+            dailyForecastData = await dailyForecastResponse.json();
+    
+            setLoader(false);
+            setCurrentWeather(currentWeatherData.current);
+            setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
+            setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
+    
+            setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+        } catch (error) {
+            setLoader(false)
+            setError(error.message)
+            console.log('Error occurred during fetch ', error)
+            throw error;
+        }
+    }
+
     useEffect(() => {
-        
+
         forecast();
 
     }, []);
@@ -138,23 +159,43 @@ function Weather() {
         forecast();
     };
 
-    const renderHourlyForecast = () => {
-
-        return hourlyForecast.slice(0, 10).map((hourData, index) => (
+    const renderHourlyForecast = () => {                
+    
+        return hourlyForecast.map((hourData, index) => (
             <div key={index} className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] ps-2.5 pe-[27px]'>
                 <p className='text-sm mb-1'>{getHourText(index)}</p>
                 <img className='min-w-[60px]' src={hourData.condition.icon} alt='Weather Icon' />
                 <p className='mt-2 text-lg text-white'>{Math.round(hourData.temp_c)}°</p>
             </div>
         ));
-    };
+    };    
 
     const getHourText = (index) => {
-        const currentHour = new Date().getHours();
-        const forecastHour = (currentHour + (index + 1) * 2) % 12 || 12;
-        const period = currentHour + (index + 1) * 2 < 12 || currentHour + (index + 1) * 2 >= 24 ? 'AM' : 'PM';
-        return `${forecastHour} ${period}`;
-    };    
+        const forecastHour = index;
+        const period = forecastHour < 12 ? 'AM' : 'PM';
+        const displayHour = forecastHour === 0 ? 12 : forecastHour % 12;
+        return `${displayHour} ${period}`;
+      };      
+
+    const renderdailyForecast = () => {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const todayIndex = new Date().getDay(); 
+
+        return dailyForecast.map((dailyData, i) => (
+            <div key={i} className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-0 mt-2 last:border-b-0'>
+                <div>
+                    <p className=''>{i === 0 ? 'Today' : days[(todayIndex + i) % 7]}</p>
+                </div>
+                <div className='lg:flex sm:hidden flex items-center'>
+                    <img className='h-9 me-1' src={dailyData.day.condition.icon} />
+                    <p className='text-sm md:text-xs font-semibold text-gray-300'>{dailyData.day.condition.text}</p>
+                </div>
+                <div className='grid justify-self-end'>
+                    <p className=''>{Math.round(dailyData.day.maxtemp_c)+'/'+Math.round(dailyData.day.mintemp_c)}</p>
+                </div>
+            </div>
+        ));
+    };
 
     return (
         <>
@@ -196,14 +237,14 @@ function Weather() {
                     </ul>
                 </aside>
 
-                <section className='md:w-[65%] sm:w-[68%] sm:p-3 p-2 rounded-lg sm:mx-2'>
+                <section className='md:w-[62%] sm:w-[63%] lg:p-3 p-2 rounded-lg sm:mx-2'>
 
                     <div className='flex items-center'>
                         <button onClick={toggleMenu} className='block md:hidden text-gray-200 me-2'><FontAwesomeIcon className=' h-6 mt-2' icon={faBars} /></button>
                         <input className='bg-gray-700 placeholder:text-[#9399a2ff] rounded-md w-[80%] px-3 py-2 mt-1 outline-none text-gray-300 city_input' type="text" placeholder='Search for a city' onChange={handleInputChange} />
                         {seacrhBtn ? (
                             <button className='px-3 py-2 rounded-s-none border-s border-gray-500 rounded-md bg-gray-700 text-gray-300 mt-1 search_city_btn' onClick={handleSearch}><FontAwesomeIcon icon={faMagnifyingGlass} /></button>
-                        ): (
+                        ) : (
                             null
                         )}
                     </div>
@@ -284,93 +325,10 @@ function Weather() {
 
                 </section>
 
-                <section className='md:w-[25%] sm:w-[32%] bg-[#202B3B] text-[#9399a2ff] px-3 md:py-4 py-3 md:h-[94vh] rounded-lg mx-2 sm:mt-0 mt-4'>
-                    <p className='text-xs font-bold mb-4 mt-1'>7 Days Forecast</p>
+                <section className='md:w-[28%] sm:w-[37%] bg-[#202B3B] text-[#9399a2ff] px-3 lg:py-4 py-3 md:h-[94vh] rounded-lg mx-2 sm:mt-0 mt-4'>
+                    <p className='text-xs font-bold md:mb-4 mb-3 mt-1'>7 Days Forecast</p>
                     <div className='flex flex-col justify-evenly md:h-[98%] sm:h-[95%] md:text-xs sm:text-sm'>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Tomorrow</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
-                        <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 pb-4 md:mt-4 mt-3'>
-                            <div>
-                                <p className=''>Today</p>
-                            </div>
-                            <div className='lg:flex sm:hidden flex items-center'>
-                                <img className='h-9 me-1' src={clear_png} />
-                                <p className=' font-semibold text-gray-300'>Sunny</p>
-                            </div>
-                            <div className='grid justify-self-end'>
-                                <p className=''>36/22</p>
-                            </div>
-                        </div>
+                            {renderdailyForecast()}
                     </div>
                 </section>
             </div>
