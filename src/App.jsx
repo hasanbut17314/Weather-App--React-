@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Weather from './comp/Weather'
 import Cities from './comp/cities'
 import Settings from './comp/Settings'

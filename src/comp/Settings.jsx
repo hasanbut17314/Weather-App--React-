@@ -1,7 +1,10 @@
 import React from 'react'
+import HeadBar from './HeadBar'
 
 function Settings() {
     return (
+        <>
+        <HeadBar />
         <div className='bg-[#0B131E] text-white w-full h-auto'>
             <h2>Units</h2>
             <div className='flex gap-[20px]  '>
@@ -108,6 +111,7 @@ function Settings() {
             </div>
 
         </div>
+        </>
     )
 }
 
