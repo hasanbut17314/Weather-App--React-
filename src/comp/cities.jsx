@@ -1,9 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faCloudSunRain, faGear, faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { NavLink } from 'react-router-dom';
-import logo_png from '../pic/logo.png'
+import { faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import clear_png from '../pic/clear.png'
 import toggleMenu from './togglefunc'
 import Sidebar from './Sidebar';
@@ -90,36 +90,41 @@ function Cities() {
 
         } catch (error) {
             setLoader(false)
-            setError(error.message)
             console.log('error ocuured during fetch ', error)
         }
     }
 
     async function forecastManual(city) {
         try {
+            setError(null);
             setLoader(true);
             let currentWeatherData;
             let hourlyForecastData;
             let dailyForecastData;
-    
+
             const currentWeatherResponse = await fetch(`https://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
             currentWeatherData = await currentWeatherResponse.json();
             const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
             hourlyForecastData = await hourlyForecastResponse.json();
             const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=10&aqi=no&alerts=no`);
             dailyForecastData = await dailyForecastResponse.json();
-    
+
             setLoader(false);
-            setCurrentWeather(currentWeatherData.current);
-            setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
-            setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
-    
-            setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+            if (!currentWeatherResponse.ok || !hourlyForecastResponse.ok || !dailyForecastResponse.ok) {
+                setError("City not found");
+                setCity("--");
+                toast.error('City Not Found! Please Try Again');
+            }
+            else {
+                setCurrentWeather(currentWeatherData.current);
+                setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
+                setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
+
+                setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+            }
         } catch (error) {
             setLoader(false)
-            setError(error.message)
             console.log('Error occurred during fetch ', error)
-            throw error;
         }
     }
 
@@ -216,6 +221,18 @@ function Cities() {
                     </div>
                 ) : (null)
                 }
+
+                <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
 
                 <Sidebar />
 

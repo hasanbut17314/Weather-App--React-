@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faCloudSunRain, faGear, faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye, faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faTemperatureThreeQuarters, faWind, faSun, faCloudRain, faDroplet, faEye, faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import clear_png from '../pic/clear.png'
 import drizzle_png from '../pic/drizzle.png'
 import cloud_png from '../pic/cloud.png'
@@ -41,7 +43,6 @@ function Weather() {
             console.error('Error fetching forecast:', error);
         }
     };
-
     const [loader, setLoader] = useState(false)
     const [error, setError] = useState(null)
     const [city, setCity] = useState('--')
@@ -54,7 +55,7 @@ function Weather() {
 
     async function forecast() {
         try {
-
+            setError(null)
             setLoader(true);
             const coords = await requestLocationPermission();
             let currentWeatherData;
@@ -83,36 +84,41 @@ function Weather() {
 
         } catch (error) {
             setLoader(false)
-            setError(error.message)
             console.log('error ocuured during fetch ', error)
         }
     }
 
     async function forecastManual(city) {
         try {
+            setError(null);
             setLoader(true);
             let currentWeatherData;
             let hourlyForecastData;
             let dailyForecastData;
-    
+
             const currentWeatherResponse = await fetch(`https://api.weatherapi.com/v1/current.json?key=${APIkey}&q=${city}`);
             currentWeatherData = await currentWeatherResponse.json();
             const hourlyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=1&aqi=no&alerts=no`);
             hourlyForecastData = await hourlyForecastResponse.json();
             const dailyForecastResponse = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${APIkey}&q=${city}&days=10&aqi=no&alerts=no`);
             dailyForecastData = await dailyForecastResponse.json();
-    
+
             setLoader(false);
-            setCurrentWeather(currentWeatherData.current);
-            setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
-            setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
-    
-            setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+            if (!currentWeatherResponse.ok || !hourlyForecastResponse.ok || !dailyForecastResponse.ok) {
+                setError("City not found");
+                setCity("--");
+                toast.error('City Not Found! Please Try Again');
+            }
+            else {
+                setCurrentWeather(currentWeatherData.current);
+                setHourlyForecast(hourlyForecastData.forecast.forecastday[0].hour);
+                setDailyForecast(dailyForecastData.forecast.forecastday.splice(0, 7));
+
+                setCurrenticon(getWeatherIcon(currentWeatherData.current.condition.code));
+            }
         } catch (error) {
             setLoader(false)
-            setError(error.message)
             console.log('Error occurred during fetch ', error)
-            throw error;
         }
     }
 
@@ -159,8 +165,8 @@ function Weather() {
         forecast();
     };
 
-    const renderHourlyForecast = () => {                
-    
+    const renderHourlyForecast = () => {
+
         return hourlyForecast.map((hourData, index) => (
             <div key={index} className='flex flex-col items-center justify-center mx-2 border-e border-[#9399a271] ps-2.5 pe-[27px]'>
                 <p className='text-sm mb-1'>{getHourText(index)}</p>
@@ -168,18 +174,18 @@ function Weather() {
                 <p className='mt-2 text-lg text-white'>{Math.round(hourData.temp_c)}°</p>
             </div>
         ));
-    };    
+    };
 
     const getHourText = (index) => {
         const forecastHour = index;
         const period = forecastHour < 12 ? 'AM' : 'PM';
         const displayHour = forecastHour === 0 ? 12 : forecastHour % 12;
         return `${displayHour} ${period}`;
-      };      
+    };
 
     const renderdailyForecast = () => {
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const todayIndex = new Date().getDay(); 
+        const todayIndex = new Date().getDay();
 
         return dailyForecast.map((dailyData, i) => (
             <div key={i} className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-3 items-center px-2 border-b border-gray-500 pb-4 md:mt-0 mt-2 last:border-b-0'>
@@ -191,7 +197,7 @@ function Weather() {
                     <p className='text-sm md:text-xs font-semibold text-gray-300'>{dailyData.day.condition.text}</p>
                 </div>
                 <div className='grid justify-self-end'>
-                    <p className=''>{Math.round(dailyData.day.maxtemp_c)+'/'+Math.round(dailyData.day.mintemp_c)}</p>
+                    <p className=''>{Math.round(dailyData.day.maxtemp_c) + '/' + Math.round(dailyData.day.mintemp_c)}</p>
                 </div>
             </div>
         ));
@@ -210,6 +216,18 @@ function Weather() {
                     </div>
                 ) : (null)
                 }
+
+                <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
 
                 <Sidebar />
 
@@ -304,7 +322,7 @@ function Weather() {
                 <section className='md:w-[28%] sm:w-[37%] bg-[#202B3B] text-[#9399a2ff] px-3 lg:py-4 py-3 md:h-[94vh] rounded-lg mx-2 sm:mt-0 mt-4'>
                     <p className='text-xs font-bold md:mb-4 mb-3 mt-1'>7 Days Forecast</p>
                     <div className='flex flex-col justify-evenly md:h-[98%] sm:h-[95%] md:text-xs sm:text-sm'>
-                            {renderdailyForecast()}
+                        {renderdailyForecast()}
                     </div>
                 </section>
             </div>
