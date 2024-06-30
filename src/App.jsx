@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Weather from './comp/Weather'
 import Cities from './comp/cities'
+import Settings from './comp/Settings'
 import GetStarted from './comp/getStarted'
 import Error from './comp/404'
 import './App.css'
@@ -11,6 +12,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path='/settings' element={<Settings />} />
         <Route path='/weather' element={<Weather />} />
         <Route path='/cities' element={<Cities />} />
         <Route path='/' element={<GetStarted />} />

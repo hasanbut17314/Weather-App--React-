@@ -11,8 +11,8 @@ function GetStarted() {
 
     return (
         <>
-            <div className='lg:h-[94vh] h-auto flex md:flex-row flex-col items-center'>
-                <div className='bg-[#202B3B] text-[#b1bdcd] md:h-[80%] rounded-lg md:w-[45%] flex flex-col items-center justify-center p-3'>
+            <div className='lg:h-[94vh] h-auto flex md:flex-row flex-col items-center '>
+                <div className='bg-[#202B3B] text-[#b1bdcd] md:h-[80%] rounded-lg md:w-[45%] md:flex flex-col items-center justify-center p-3 hidden'>
                     <img className='md:h-[270px]' src={logo_png} alt="logo" />
                     <p className='text-sm text-center my-3'>"Welcome to Hammy's Weather, where every forecast is a ray of sunshine! Get ready to embark on a meteorological adventure with us as we bring you real-time weather updates with a sprinkle of charm. From clear skies to stormy nights, Hammy's Weather has you covered, ensuring you're always one step ahead of Mother Nature. Join us and discover weather forecasts like never before, tailored just for you."</p>
                 </div>
