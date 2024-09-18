@@ -51,7 +51,7 @@ function Weather() {
     const [hourlyForecast, setHourlyForecast] = useState([])
     const [dailyForecast, setDailyForecast] = useState([])
 
-    const APIkey = '4b7b77a38acf4382a0293533241809';
+    const APIkey = 'b0b6594716633c6e963fd8724166bc0a';
 
     async function forecast() {
         try {
